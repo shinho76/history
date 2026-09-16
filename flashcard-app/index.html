@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>키워드 암기 플래시카드</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="toast" class="toast" hidden></div>
+
+<!-- ================= 홈 화면 ================= -->
+<main id="view-home" class="view">
+  <header class="app-header">
+    <h1>키워드 암기 플래시카드</h1>
+    <p class="sub">텍스트를 업로드하면 굵게 강조된 키워드를 자동으로 뽑아 카드로 만들어줘요.</p>
+  </header>
+
+  <section class="card-block">
+    <h2>새 세트 만들기</h2>
+    <div class="new-set-actions">
+      <label class="btn btn-primary file-btn">
+        텍스트 파일 업로드 (.txt)
+        <input type="file" id="file-input" accept=".txt,text/plain" hidden />
+      </label>
+      <button id="btn-sample" class="btn btn-secondary" type="button">샘플 텍스트로 시작하기</button>
+    </div>
+    <p class="hint">
+      `## 페이지 12-13 (이미지 1-2)` 같은 페이지 구분자와 `**굵은 글씨**` 강조 표시가
+      포함된 텍스트 파일을 넣으면 페이지 번호와 강조 키워드를 함께 인식해요.
+    </p>
+  </section>
+
+  <section class="card-block">
+    <h2>저장된 세트</h2>
+    <ul id="set-list" class="set-list"></ul>
+    <p id="set-list-empty" class="hint">아직 저장된 세트가 없어요.</p>
+  </section>
+</main>
+
+<!-- ================= 검수 화면 ================= -->
+<main id="view-review" class="view" hidden>
+  <header class="app-header">
+    <button class="btn btn-ghost" id="review-back">← 홈으로</button>
+    <h1 id="review-title">키워드 검수</h1>
+    <p class="sub">자동으로 뽑은 키워드예요. 잘못된 항목은 고치거나 지우고, 필요하면 직접 추가하세요.</p>
+  </header>
+
+  <div class="review-toolbar">
+    <span id="review-count" class="count-badge">0개</span>
+    <button id="btn-add-keyword" class="btn btn-secondary" type="button">+ 키워드 추가</button>
+  </div>
+
+  <ul id="review-list" class="review-list"></ul>
+
+  <footer class="review-footer">
+    <button id="btn-start-study" class="btn btn-primary btn-large" type="button">학습 시작하기</button>
+  </footer>
+</main>
+
+<!-- ================= 학습 화면 ================= -->
+<main id="view-study" class="view" hidden>
+  <header class="study-header">
+    <button class="btn btn-ghost" id="study-back">← 홈</button>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+      <div id="progress-text" class="progress-text">0 / 0 완료</div>
+    </div>
+    <button class="btn btn-ghost" id="study-reset" title="전체 학습 상태 초기화">다시 학습</button>
+  </header>
+
+  <div id="roulette" class="roulette" hidden>
+    <div class="roulette-label">다음 카드 뽑는 중…</div>
+    <div id="roulette-text" class="roulette-text">?</div>
+  </div>
+
+  <div id="study-stage" class="study-stage">
+    <div id="card-wrapper" class="card-wrapper">
+      <div id="card" class="card">
+        <div class="card-face card-front">
+          <span class="card-hint">탭해서 정의 보기</span>
+          <div id="card-keyword" class="card-keyword">키워드</div>
+        </div>
+        <div class="card-face card-back">
+          <div id="card-definition" class="card-definition">정의</div>
+          <div id="card-pages" class="card-pages"></div>
+        </div>
+      </div>
+      <div class="swipe-badge swipe-badge-know">안다 ⭕</div>
+      <div class="swipe-badge swipe-badge-unknown">모른다 ❌</div>
+    </div>
+  </div>
+
+  <div class="study-controls">
+    <button id="btn-unknown" class="btn btn-round btn-unknown" type="button" title="모른다 (←)">❌</button>
+    <div class="study-controls-hint">← 모른다 / 카드 클릭: 뒤집기 / 안다 →</div>
+    <button id="btn-known" class="btn btn-round btn-known" type="button" title="안다 (→)">⭕</button>
+  </div>
+</main>
+
+<!-- ================= 완료 화면 ================= -->
+<div id="view-complete" class="overlay" hidden>
+  <div class="complete-box">
+    <div class="complete-emoji">🎉</div>
+    <h2>모든 키워드를 다 외웠어요!</h2>
+    <p id="complete-sub"></p>
+    <div class="complete-actions">
+      <button id="complete-reset" class="btn btn-primary" type="button">다시 학습하기</button>
+      <button id="complete-home" class="btn btn-secondary" type="button">홈으로</button>
+    </div>
+  </div>
+</div>
+
+<script src="sample-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

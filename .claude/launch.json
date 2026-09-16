@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "korcard-flashcard",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "5183", "--directory", "flashcard-app"],
+      "port": 5183
+    }
+  ]
+}

@@ -334,6 +334,10 @@ function startFromText(rawText, name) {
   let keywords = parseKeywords(rawText);
   if (rawText === SAMPLE_TEXT && typeof CURATED_KEYWORDS !== "undefined") {
     keywords = mergeCurated(keywords, CURATED_KEYWORDS);
+    if (typeof SAMPLE_EXCLUDE_KEYWORDS !== "undefined") {
+      const exclude = new Set(SAMPLE_EXCLUDE_KEYWORDS);
+      keywords = keywords.filter((k) => !exclude.has(k.keyword.trim()));
+    }
   }
   if (keywords.length === 0) {
     toast("굵게 강조된 키워드를 찾지 못했어요. 텍스트 형식을 확인해 주세요.");

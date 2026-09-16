@@ -478,8 +478,7 @@ function enterStudy(id) {
 
   showView("study");
   updateProgressUI();
-  $("#roulette").hidden = true;
-  $("#study-stage").style.visibility = "visible";
+  $("#roulette-overlay").hidden = true;
   pickNextCard(true);
 }
 
@@ -530,10 +529,19 @@ function pickNextCard(skipRoulette) {
   }
   const next = candidates[Math.floor(Math.random() * candidates.length)];
 
+  // 카드 내용은 미리 채워 두고(뒤에 숨어 있음), 원형 룰렛이 카드 위에서
+  // 돌다가 멈추면 사라지는 방식이라 카드/버튼 위치가 전혀 움직이지 않는다.
+  $("#study-stage").hidden = false;
+  setCard(next);
+
   if (skipRoulette) {
-    setCard(next);
+    $("#roulette-overlay").hidden = true;
+    state.study.busy = false;
   } else {
-    spinRoulette(pool, next, () => setCard(next));
+    spinRoulette(pool, next.keyword, () => {
+      $("#roulette-overlay").hidden = true;
+      state.study.busy = false;
+    });
   }
 }
 
@@ -550,23 +558,19 @@ function setCard(kw) {
   wrapper.style.transform = "translateX(0) rotate(0)";
   wrapper.style.opacity = "1";
   requestAnimationFrame(() => (wrapper.style.transition = ""));
-  $("#study-stage").hidden = false;
-  $("#roulette").hidden = true;
-  state.study.busy = false;
 }
 
-function spinRoulette(pool, finalKw, onDone) {
+function spinRoulette(pool, finalKeyword, onDone) {
   state.study.busy = true;
-  $("#study-stage").hidden = true;
-  const roulette = $("#roulette");
+  const overlay = $("#roulette-overlay");
   const textEl = $("#roulette-text");
-  roulette.hidden = false;
+  overlay.hidden = false;
 
   const ticks = 14;
   let i = 0;
   function tick() {
     if (i >= ticks) {
-      textEl.textContent = finalKw.keyword;
+      textEl.textContent = finalKeyword;
       setTimeout(onDone, 260);
       return;
     }
@@ -599,7 +603,7 @@ function animateOut(result, cb) {
 
 function showComplete() {
   $("#study-stage").hidden = true;
-  $("#roulette").hidden = true;
+  $("#roulette-overlay").hidden = true;
   $("#complete-sub").textContent = `"${state.study.name}" 세트의 키워드 ${state.study.keywords.length}개를 모두 외웠어요!`;
   $("#view-complete").hidden = false;
 }

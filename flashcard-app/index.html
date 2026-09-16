@@ -70,11 +70,6 @@
     <button class="btn btn-ghost" id="study-reset" title="전체 학습 상태 초기화">다시 학습</button>
   </header>
 
-  <div id="roulette" class="roulette" hidden>
-    <div class="roulette-label">다음 카드 뽑는 중…</div>
-    <div id="roulette-text" class="roulette-text">?</div>
-  </div>
-
   <div id="study-stage" class="study-stage">
     <div id="card-wrapper" class="card-wrapper">
       <div id="card" class="card">
@@ -89,6 +84,10 @@
       </div>
       <div class="swipe-badge swipe-badge-know">안다 ⭕</div>
       <div class="swipe-badge swipe-badge-unknown">모른다 ❌</div>
+      <div id="roulette-overlay" class="roulette-overlay" hidden>
+        <div class="roulette-ring"></div>
+        <div id="roulette-text" class="roulette-circle-text">?</div>
+      </div>
     </div>
   </div>
 

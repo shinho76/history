@@ -506,7 +506,7 @@ function updateProgressUI() {
   const known = total - unknownPool().length;
   const pct = total === 0 ? 0 : Math.round((known / total) * 100);
   $("#progress-fill").style.width = pct + "%";
-  $("#progress-text").textContent = `${known} / ${total} 완료`;
+  $("#progress-text").textContent = `${known} / ${total} 완료 (${pct}%)`;
 }
 
 function findKeyword(id) {

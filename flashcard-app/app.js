@@ -346,8 +346,10 @@ function startFromText(rawText, name) {
   showView("review");
 }
 
+const DEFAULT_SET_NAME = "한국근현대사";
+
 $("#btn-sample").addEventListener("click", () => {
-  startFromText(SAMPLE_TEXT, "샘플: 한국근현대사");
+  startFromText(SAMPLE_TEXT, DEFAULT_SET_NAME);
 });
 
 $("#file-input").addEventListener("change", (e) => {
@@ -707,5 +709,11 @@ document.addEventListener("keydown", (e) => {
 /* ============================================================
    초기화
    ============================================================ */
-renderHome();
-showView("home");
+// 저장된 세트가 하나도 없는 첫 방문이면, 버튼 클릭 없이 바로 첨부 텍스트로
+// 검수 화면까지 진입시킨다. 이미 세트가 있으면(재방문) 홈에서 이어서 고르게 둔다.
+if (loadSetsIndex().length === 0) {
+  startFromText(SAMPLE_TEXT, DEFAULT_SET_NAME);
+} else {
+  renderHome();
+  showView("home");
+}

@@ -560,30 +560,59 @@ function setCard(kw) {
   requestAnimationFrame(() => (wrapper.style.transition = ""));
 }
 
+// 스핀 도중에 카드/버튼을 누르면 즉시 멈출 수 있도록, 현재 진행 중인 스핀을
+// 바로 끝내는 함수를 여기에 보관해 둔다. 스핀이 없을 때는 null.
+let activeSpinSkip = null;
+
+// 스핀이 돌고 있으면 즉시 멈추고 true를 반환한다(이번 입력은 스핀을 멈추는
+// 데만 쓰고, 뒤집기/판정 등 원래 동작은 수행하지 않는다).
+function trySkipSpin() {
+  if (activeSpinSkip) {
+    activeSpinSkip();
+    return true;
+  }
+  return false;
+}
+
 function spinRoulette(pool, finalKeyword, onDone) {
   state.study.busy = true;
   const overlay = $("#roulette-overlay");
   const textEl = $("#roulette-text");
   overlay.hidden = false;
 
+  let timerId = null;
+  let finished = false;
+
+  function finish() {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timerId);
+    activeSpinSkip = null;
+    textEl.textContent = finalKeyword;
+    onDone();
+  }
+
   const ticks = 14;
   let i = 0;
   function tick() {
     if (i >= ticks) {
       textEl.textContent = finalKeyword;
-      setTimeout(onDone, 260);
+      timerId = setTimeout(finish, 260);
       return;
     }
     const r = pool[Math.floor(Math.random() * pool.length)];
     textEl.textContent = r.keyword;
     i++;
     const delay = 55 + i * 12; // 점점 느려짐
-    setTimeout(tick, delay);
+    timerId = setTimeout(tick, delay);
   }
+
+  activeSpinSkip = finish;
   tick();
 }
 
 function judge(result) {
+  if (trySkipSpin()) return;
   if (state.study.busy || !state.study.currentId) return;
   const id = state.study.currentId;
   state.study.status[id] = result === "known" ? "known" : "unknown";
@@ -613,6 +642,7 @@ let suppressNextClick = false;
 // setPointerCapture(아래 스와이프 로직)가 클릭 이벤트의 target을 card-wrapper로
 // 재지정하므로, 카드 자체가 아니라 wrapper에 리스너를 둔다.
 $("#card-wrapper").addEventListener("click", () => {
+  if (trySkipSpin()) return;
   if (state.study.busy || suppressNextClick) {
     suppressNextClick = false;
     return;
@@ -652,7 +682,12 @@ $("#complete-home").addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (state.view !== "study" || state.study.busy) return;
+  if (state.view !== "study") return;
+  if ((e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === " " || e.key === "Enter") && trySkipSpin()) {
+    e.preventDefault();
+    return;
+  }
+  if (state.study.busy) return;
   if (e.key === "ArrowRight") judge("known");
   else if (e.key === "ArrowLeft") judge("unknown");
   else if (e.key === " " || e.key === "Enter") {
@@ -670,6 +705,7 @@ document.addEventListener("keydown", (e) => {
   const THRESHOLD = 90;
 
   function onDown(x) {
+    if (trySkipSpin()) return;
     if (state.study.busy) return;
     dragging = true;
     startX = x;

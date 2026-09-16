@@ -705,7 +705,12 @@ document.addEventListener("keydown", (e) => {
   const THRESHOLD = 90;
 
   function onDown(x) {
-    if (trySkipSpin()) return;
+    if (trySkipSpin()) {
+      // 이 press로 스핀만 멈추고, 뒤이어 발생하는 click 이벤트가 카드를
+      // 뒤집지 않도록 막는다(뒤집기는 스핀이 멈춘 뒤 다시 눌러야 동작).
+      suppressNextClick = true;
+      return;
+    }
     if (state.study.busy) return;
     dragging = true;
     startX = x;
